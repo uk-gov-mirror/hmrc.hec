@@ -47,7 +47,8 @@ class SDESCallbackController @Inject() (
     Json.fromJson[CallBackNotification](request.body) match {
       case JsSuccess(callbackNotification, _) =>
         logger.info(
-          s"Received SDES callback for file: ${callbackNotification.filename}, " +
+          "[SDESCallbackController][callback] " +
+            s"Received SDES callback for file: ${callbackNotification.filename}, " +
             s"with correlationId : ${callbackNotification.correlationID}," +
             s" status : ${callbackNotification.notification}," +
             s" and failureReason : '${callbackNotification.failureReason}'"
@@ -61,7 +62,7 @@ class SDESCallbackController @Inject() (
         }
 
       case JsError(err) =>
-        logger.warn(s"Failed to parse the SDES callback notification with error:: $err")
+        logger.warn(s"[SDESCallbackController][callback] Failed to parse SDES callback notification with error:: $err")
         Future.successful(BadRequest)
     }
 
@@ -76,7 +77,9 @@ class SDESCallbackController @Inject() (
       .deleteFile(fileName, dirName)
       .fold(
         { err =>
-          logger.warn(s"Failed to delete file:: $fileName from object store with error: $err")
+          logger.warn(
+            s"[SDESCallbackController][deleteFileFromObjectStore] Failed to delete file:: $fileName from object store with error: $err"
+          )
           InternalServerError
         },
         _ => Ok
@@ -96,7 +99,9 @@ class SDESCallbackController @Inject() (
 
     deleteAndUpdateResult.fold(
       { err =>
-        logger.warn(s"Failure in deleting file :: $fileName and update the hec tax check list with error :: $err")
+        logger.warn(
+          s"[SDESCallbackController][deleteFileAndUpdateTaxChecks] Failure in deleting file :: $fileName and update the hec tax check list with error :: $err"
+        )
         InternalServerError
       },
       _ => Ok

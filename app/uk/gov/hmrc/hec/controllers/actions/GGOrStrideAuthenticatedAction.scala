@@ -73,7 +73,7 @@ class GGOrStrideAuthenticateActionBuilder @Inject() (
           block(new AuthenticatedGGOrStrideRequest[A](Left(strideOperatorDetails), request))
 
         case other =>
-          logger.info(s"Found unsupported auth provider id type: $other")
+          logger.info(s"[GGOrStrideAuthenticatedAction][invokeBlock] Found unsupported auth provider id type: $other")
           Future.successful(forbidden)
       }(carrier, executionContext)
       .recover { case _: NoActiveSession =>

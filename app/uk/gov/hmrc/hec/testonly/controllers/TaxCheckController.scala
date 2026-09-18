@@ -50,7 +50,7 @@ class TaxCheckController @Inject() (
             .saveTaxCheck(saveTaxCheckRequest)
             .fold(
               { e =>
-                logger.warn("Could not store tax check", e)
+                logger.warn("[TestTaxCheckController][storeTaxCheck] Could not store tax check", e)
                 InternalServerError
               },
               _ => Created
@@ -70,7 +70,10 @@ class TaxCheckController @Inject() (
           .getTaxCheck(code)
           .fold(
             { e =>
-              logger.warn(s"Could not get tax check for tax check code $taxCheckCode", e)
+              logger.warn(
+                s"[TestTaxCheckController][getTaxCheck] Could not get tax check for tax check code $taxCheckCode",
+                e
+              )
               InternalServerError
             },
             _.fold(NotFound("No tax check found"))(taxCheck => Ok(Json.toJson(taxCheck)))
@@ -88,7 +91,10 @@ class TaxCheckController @Inject() (
           .deleteTaxCheck(code)
           .fold(
             { e =>
-              logger.warn(s"Could not delete tax check for tax check code $taxCheckCode", e)
+              logger.warn(
+                s"[TestTaxCheckController][deleteTaxCheck] Could not delete tax check for tax check code $taxCheckCode",
+                e
+              )
               InternalServerError
             },
             _ => Ok
@@ -106,7 +112,7 @@ class TaxCheckController @Inject() (
       .deleteAllTaxCheck()
       .fold(
         { e =>
-          logger.warn(s"Could not delete all tax checks", e)
+          logger.warn(s"[TestTaxCheckController][deleteAllTaxChecks] Could not delete all tax checks", e)
           InternalServerError
         },
         _ => Ok

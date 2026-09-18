@@ -72,7 +72,9 @@ class DESServiceImpl @Inject() (
       .getCtutr(crn)
       .leftMap(uk.gov.hmrc.hec.services.DESService.BackendError.apply)
       .subflatMap { httpResponse =>
-        logger.info(s"Fetch CTUTR API returned correlationId = ${httpResponse.header("CorrelationId")}")
+        logger.info(
+          s"[DESService][getCtutr] Fetch CTUTR API returned correlationId = ${httpResponse.header("CorrelationId")}"
+        )
         if (httpResponse.status === OK) {
           httpResponse
             .parseJSON[GetCtutrSuccess]

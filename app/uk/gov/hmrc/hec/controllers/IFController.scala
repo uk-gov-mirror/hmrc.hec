@@ -50,10 +50,10 @@ class IFController @Inject() (
 
   private def handleError(e: IFError, correlationId: UUID) = e match {
     case DataNotFoundError(msg) =>
-      logger.warn(messageWithCorrelationId(msg, correlationId))
+      logger.warn(messageWithCorrelationId(s"[IFController][handleError] $msg", correlationId))
       NotFound
     case BackendError(e)        =>
-      logger.warn(messageWithCorrelationId("Could not fetch status", correlationId), e)
+      logger.warn(messageWithCorrelationId("[IFController][handleError] Could not fetch status", correlationId), e)
       InternalServerError
   }
 
@@ -67,7 +67,7 @@ class IFController @Inject() (
     */
   def getSAStatus(utr: String, taxYear: String): Action[AnyContent] = authenticateGG.async { implicit request =>
     val correlationId: UUID = UUID.randomUUID()
-    logger.info(messageWithCorrelationId("Getting SA status", correlationId))
+    logger.info(messageWithCorrelationId("[IFController][getSAStatus] Getting SA status", correlationId))
 
     val sautrValidation   = SAUTR.fromString(utr).toValidNel("Invalid SAUTR")
     val taxYearValidation = TaxYear.fromString(taxYear).toValidNel("Invalid tax year")
@@ -102,7 +102,7 @@ class IFController @Inject() (
     endDate: String
   ): Action[AnyContent] = authenticateGG.async { implicit request =>
     val correlationId: UUID = UUID.randomUUID()
-    logger.info(messageWithCorrelationId("Getting CT status", correlationId))
+    logger.info(messageWithCorrelationId("[IFController][getCTStatus] Getting CT status", correlationId))
 
     def parsedDate(dateStr: String, error: String): Validated[NonEmptyList[String], LocalDate] =
       try LocalDate.parse(dateStr, DateTimeFormatter.ISO_DATE).valid

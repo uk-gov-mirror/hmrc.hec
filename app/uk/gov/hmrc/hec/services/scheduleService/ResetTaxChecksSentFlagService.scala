@@ -47,24 +47,42 @@ class ResetTaxChecksSentFlagService @Inject() (
 
   if (resetSentFlagsOnStart) {
     resetSentFlags().onComplete {
-      case Failure(e)       => logger.warn(s"Could not run job reset 'sent' flags for tax check data: ${e.getMessage}")
-      case Success(None)    => logger.info("Could not get lock to reset 'sent' flag for tax check data")
-      case Success(Some(_)) => logger.info("Job to reset 'sent' flag for tax check data complete")
+      case Failure(e)       =>
+        logger.warn(
+          s"[ResetTaxChecksSentFlagService][resetSentFlags] Could not run job reset 'sent' flags for tax check data: ${e.getMessage}"
+        )
+      case Success(None)    =>
+        logger.info(
+          "[ResetTaxChecksSentFlagService][resetSentFlags] Could not get lock to reset 'sent' flag for tax check data"
+        )
+      case Success(Some(_)) =>
+        logger.info(
+          "[ResetTaxChecksSentFlagService][resetSentFlags] Job to reset 'sent' flag for tax check data complete"
+        )
     }
   } else {
-    logger.info("Reset of 'sent' flag for tax check data not enabled")
+    logger.info("[ResetTaxChecksSentFlagService][resetSentFlags] Reset of 'sent' flag for tax check data not enabled")
   }
 
   private def resetSentFlags(): Future[Option[Unit]] =
     mongoLockService.withLock(
       lockId,
       () => {
-        logger.info(s"Resetting 'sent' flag for all tax checks created on or after $resetTaxChecksCreatedOnOrAfter")
+        logger.info(
+          s"[ResetTaxChecksSentFlagService][resetSentFlags] Resetting 'sent' flag for all tax checks created on or after $resetTaxChecksCreatedOnOrAfter"
+        )
         taxCheckStore
           .resetTaxCheckIsExtractedFlag(resetTaxChecksCreatedOnOrAfter)
           .fold(
-            e => logger.warn("Could not reset 'sent' flags for tax check data", e),
-            _ => logger.info("Successfully reset 'sent' flags for tax check data")
+            e =>
+              logger.warn(
+                "[ResetTaxChecksSentFlagService][resetSentFlags] Could not reset 'sent' flags for tax check data",
+                e
+              ),
+            _ =>
+              logger.info(
+                "[ResetTaxChecksSentFlagService][resetSentFlags] Successfully reset 'sent' flags for tax check data"
+              )
           )
       }
     )

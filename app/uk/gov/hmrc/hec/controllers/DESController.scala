@@ -42,13 +42,13 @@ class DESController @Inject() (
 
   private def handleError(e: DESError) = e match {
     case DataNotFoundError(msg) =>
-      logger.warn(msg)
+      logger.warn(s"[DESController][handleError] $msg")
       NotFound
     case InvalidCRNError(msg)   =>
-      logger.warn(s"Invalid CRN - $msg")
+      logger.warn(s"[DESController][handleError] Invalid CRN - $msg")
       BadRequest("Invalid CRN from DES")
     case BackendError(e)        =>
-      logger.warn("Could not fetch CTUTR", e)
+      logger.warn("[DESController][handleError] Could not fetch CTUTR", e)
       InternalServerError
   }
 

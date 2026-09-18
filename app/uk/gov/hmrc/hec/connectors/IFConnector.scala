@@ -30,6 +30,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.hec.util.Logging
 
 @ImplementedBy(classOf[IFConnectorImpl])
 trait IFConnector {
@@ -50,7 +51,8 @@ trait IFConnector {
 @Singleton
 class IFConnectorImpl @Inject() (http: HttpClientV2, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
-) extends IFConnector {
+) extends IFConnector
+    with Logging {
 
   private def isoDateFormat(date: LocalDate) = date.format(DateTimeFormatter.ISO_DATE)
 
@@ -87,6 +89,7 @@ class IFConnectorImpl @Inject() (http: HttpClientV2, servicesConfig: ServicesCon
         .execute[HttpResponse]
         .map(Right(_))
         .recover { case e =>
+          logger.warn("[IFConnector][getSAStatus] GET IF sa-status failed", e)
           Left(Error(e))
         }
     )

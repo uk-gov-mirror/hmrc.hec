@@ -62,14 +62,14 @@ class TaxCheckController @Inject() (
           .saveTaxCheck(taxCheckData)
           .fold(
             { e =>
-              logger.warn("Could not store tax check", e)
+              logger.warn("[TaxCheckController][saveTaxCheck] Could not store tax check", e)
               InternalServerError
             },
             taxCheck => Created(Json.toJson(taxCheck))
           )
 
       case JsError(_) =>
-        logger.warn("Could not parse JSON")
+        logger.warn("[TaxCheckController][saveTaxCheck] Could not parse JSON")
         Future.successful(BadRequest)
 
     }
@@ -85,14 +85,14 @@ class TaxCheckController @Inject() (
             .matchTaxCheck(matchRequest)
             .fold(
               { e =>
-                logger.warn("Could not match tax check", e)
+                logger.warn("[TaxCheckController][matchTaxCheck] Could not match tax check", e)
                 InternalServerError
               },
               result => Ok(Json.toJson(result))
             )
 
         case JsError(_) =>
-          logger.warn("Could not parse JSON")
+          logger.warn("[TaxCheckController][matchTaxCheck] Could not parse JSON")
           Future.successful(BadRequest)
       }
     }
@@ -102,7 +102,7 @@ class TaxCheckController @Inject() (
       .getUnexpiredTaxCheckCodes(request.ggCredId)
       .fold(
         { e =>
-          logger.warn("Error while fetching tax check codes", e)
+          logger.warn("[TaxCheckController][getUnexpiredTaxCheckCodes] Error while fetching tax check codes", e)
           InternalServerError
         },
         result => Ok(Json.toJson(result))
@@ -116,7 +116,7 @@ class TaxCheckController @Inject() (
           .saveEmailAddress(saveEmailAddressRequest)
           .fold(
             { e =>
-              logger.warn("Could not save email address", e)
+              logger.warn("[TaxCheckController][saveEmailAddress] Could not save email address", e)
               InternalServerError
             },
             {
@@ -126,7 +126,7 @@ class TaxCheckController @Inject() (
           )
 
       case JsError(_) =>
-        logger.warn("Could not parse JSON")
+        logger.warn("[TaxCheckController][saveEmailAddress] Could not parse JSON")
         BadRequest
     }
   }

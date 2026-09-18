@@ -51,7 +51,7 @@ class SDESServiceImpl @Inject() (
         response.status match {
           case NO_CONTENT =>
             logger.info(
-              s"SDES has been notified of file :: ${fileNotifyRequest.file.name}. Request body was ${Json.toJson(fileNotifyRequest).toString()}. "
+              s"[SDESService][fileNotify] SDES has been notified of file :: ${fileNotifyRequest.file.name}. Request body was ${Json.toJson(fileNotifyRequest).toString()}. "
             )
             Right(())
           case rest       => Left(Error(s"$message $rest, ${response.body}"))
