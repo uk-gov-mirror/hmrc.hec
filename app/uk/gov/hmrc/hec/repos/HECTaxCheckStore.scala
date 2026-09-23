@@ -148,7 +148,9 @@ class HECTaxCheckStoreImpl @Inject() (
 
             response.value
           }
-          .recover { case e => Left(Error(e)) }
+          .recover { case e =>
+            logger.warn("[HECTaxCheckStore][get] Mongo read of tax check failed", e); Left(Error(e))
+          }
       }
     )
 
@@ -180,7 +182,9 @@ class HECTaxCheckStoreImpl @Inject() (
       preservingMdc {
         put[HECTaxCheck](taxCheck.taxCheckCode.value)(DataKey(key), taxCheck)
           .map(_ => Right(()))
-          .recover { case e => Left(Error(e)) }
+          .recover { case e =>
+            logger.warn("[HECTaxCheckStore][store] Mongo write of tax check failed", e); Left(Error(e))
+          }
       }
     )
 
@@ -189,7 +193,9 @@ class HECTaxCheckStoreImpl @Inject() (
       preservingMdc {
         deleteEntity(taxCheckCode.value)
           .map(Right(_))
-          .recover { case e => Left(Error(e)) }
+          .recover { case e =>
+            logger.warn("[HECTaxCheckStore][delete] Mongo delete of tax check failed", e); Left(Error(e))
+          }
       }
     )
 
@@ -200,7 +206,9 @@ class HECTaxCheckStoreImpl @Inject() (
         .toFuture()
         .map(_ => ())
         .map[Either[Error, Unit]](Right(_))
-        .recover { case e => Left(Error(e)) }
+        .recover { case e =>
+          logger.warn("[HECTaxCheckStore][deleteAll] Mongo deleteAll of tax checks failed", e); Left(Error(e))
+        }
     }
   )
 
@@ -213,7 +221,10 @@ class HECTaxCheckStoreImpl @Inject() (
         )
         .toFuture()
         .map[Either[Error, Unit]](_ => Right(()))
-        .recover { case e => Left(Error(e)) }
+        .recover { case e =>
+          logger.warn("[HECTaxCheckStore][resetTaxCheckIsExtractedFlag] Mongo reset extracted flag failed", e);
+          Left(Error(e))
+        }
     }
   )
 
@@ -266,7 +277,7 @@ class HECTaxCheckStoreImpl @Inject() (
 
     val errorStr = invalid.map(_.message).mkString("; ")
     if (invalid.nonEmpty) {
-      logger.warn(s"${invalid.size} results failed json parsing - $errorStr")
+      logger.warn(s"[HECTaxCheckStore][processCacheValues] ${invalid.size} results failed json parsing - $errorStr")
     }
 
     Either.cond(invalid.isEmpty, valid, Error(Left(errorStr)))

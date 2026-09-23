@@ -26,6 +26,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.hec.util.Logging
 
 @ImplementedBy(classOf[DESConnectorImpl])
 trait DESConnector {
@@ -37,7 +38,8 @@ class DESConnectorImpl @Inject() (
   http: HttpClientV2,
   servicesConfig: ServicesConfig
 )(implicit ec: ExecutionContext)
-    extends DESConnector {
+    extends DESConnector
+    with Logging {
 
   private val baseUrl: String = servicesConfig.baseUrl("des")
 
@@ -59,7 +61,9 @@ class DESConnectorImpl @Inject() (
         .setHeader(headers: _*)
         .execute[HttpResponse]
         .map(Right(_))
-        .recover { case e => Left(Error(e)) }
+        .recover { case e =>
+          logger.warn("[DESConnector][getCtutr] GET corporation-tax CTUTR lookup failed", e); Left(Error(e))
+        }
     )
 
   }

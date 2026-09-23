@@ -29,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.libs.ws.*
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.hec.util.Logging
 
 @ImplementedBy(classOf[SDESConnectorImpl])
 trait SDESConnector {
@@ -38,7 +39,8 @@ trait SDESConnector {
 @Singleton
 class SDESConnectorImpl @Inject() (http: HttpClientV2, servicesConfig: ServicesConfig, config: Configuration)(implicit
   ec: ExecutionContext
-) extends SDESConnector {
+) extends SDESConnector
+    with Logging {
 
   private val baseUrl: String = servicesConfig.baseUrl("sdes")
 
@@ -64,7 +66,9 @@ class SDESConnectorImpl @Inject() (http: HttpClientV2, servicesConfig: ServicesC
       .setHeader(extraHeaders: _*)
       .execute[HttpResponse]
     EitherT[Future, Error, HttpResponse](
-      request.map(Right(_)).recover { case e => Left(Error(e)) }
+      request.map(Right(_)).recover { case e =>
+        logger.warn("[SDESConnector][notify] POST SDES file notify failed", e); Left(Error(e))
+      }
     )
 
   }

@@ -61,16 +61,25 @@ class HECTaxCheckScheduleService @Inject() (
           mayBeValue match {
             case Some(value) =>
               value match {
-                case Left(error: models.Error) => logger.warn(s"File extraction job failed", error)
+                case Left(error: models.Error) =>
+                  logger.warn(s"[HECTaxCheckScheduleService][runScheduledJob] File extraction job failed", error)
                 case Right(_)                  =>
-                  logger.info(s"File extraction job ran successfully for creating and storing tax checks files")
+                  logger.info(
+                    s"[HECTaxCheckScheduleService][runScheduledJob] File extraction job ran successfully for creating and storing tax checks files"
+                  )
 
               }
-            case None        => logger.info("File extraction job did not run as lock couldn't be obtained.")
+            case None        =>
+              logger.info(
+                "[HECTaxCheckScheduleService][runScheduledJob] File extraction job did not run as lock couldn't be obtained."
+              )
           }
 
         case Failure(ex) =>
-          logger.warn(s"File extraction job failed with failed future", Error(ex))
+          logger.warn(
+            s"[HECTaxCheckScheduleService][runScheduledJob] File extraction job failed with failed future",
+            Error(ex)
+          )
       }
       scheduleNextJob()
     }

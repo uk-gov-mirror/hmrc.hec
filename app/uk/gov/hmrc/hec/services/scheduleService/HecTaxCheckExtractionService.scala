@@ -145,7 +145,7 @@ class HecTaxCheckExtractionServiceImpl @Inject() (
         hecTaxCheckList          <- currentBatch.map(_.filterNot(_.taxCheckData.filterFromFileTransfer.contains(true)))
         _                         =
           logger.info(
-            s" Processing file no :: $seqNumInt, with records:: ${hecTaxCheckList.size}}"
+            s"[HecTaxCheckExtractionService][createHecFile] Processing file no :: $seqNumInt, with records:: ${hecTaxCheckList.size}}"
           )
         hecTaxCheckListNextBatch <-
           taxCheckService

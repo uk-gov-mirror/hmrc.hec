@@ -77,11 +77,12 @@ class FileStoreServiceImpl @Inject() (client: PlayObjectStoreClient, config: Con
           owner = owner
         )
         .map { objSummary =>
-          logger.info(s"Saved File :: $fileName in object store")
+          logger.info(s"[FileStoreService][storeFile] Saved file :: $fileName in object store")
           Right(objSummary)
         }
         .recover { case e: Exception =>
-          logger.error(s"Document save failed for file :: $fileName error: ${e.getMessage}")
+          logger
+            .error(s"[FileStoreService][storeFile] Document save failed for file :: $fileName error: ${e.getMessage}")
           Left(models.Error(e))
         }
     )
@@ -102,11 +103,11 @@ class FileStoreServiceImpl @Inject() (client: PlayObjectStoreClient, config: Con
           owner = owner
         )
         .map { _ =>
-          logger.info(s"Deleted file  :: $fileName from object store")
+          logger.info(s"[FileStoreService][deleteFile] Deleted file :: $fileName from object store")
           Right(())
         }
         .recover { case e: Exception =>
-          logger.error(s"Deletion failed for file:: $fileName with error: ${e.getMessage}")
+          logger.error(s"[FileStoreService][deleteFile] Deletion failed for file :: $fileName error: ${e.getMessage}")
           Left(models.Error(e))
         }
     )

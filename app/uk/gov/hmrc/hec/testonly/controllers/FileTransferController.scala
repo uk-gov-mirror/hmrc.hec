@@ -35,15 +35,17 @@ class FileTransferController @Inject() (
   val fileTransfer: Action[AnyContent] = Action.async { _ =>
     hecTaxCheckExtractionService.lockAndProcessHecData().map {
       case None =>
-        logger.info("Lock to run file extraction job not obtained")
+        logger.info("[FileTransferController][transfer] Lock to run file extraction job not obtained")
         Conflict
 
       case Some(Left(e)) =>
-        logger.warn(s"File extraction job failed", e)
+        logger.warn(s"[FileTransferController][transfer] File extraction job failed", e)
         InternalServerError
 
       case Some(Right(_)) =>
-        logger.info(s"File extraction job ran successfully for creating and storing tax checks files")
+        logger.info(
+          s"[FileTransferController][transfer] File extraction job ran successfully for creating and storing tax checks files"
+        )
         Ok
 
     }
